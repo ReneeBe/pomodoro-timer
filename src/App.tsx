@@ -12,6 +12,39 @@ const DEFAULT_SETTINGS: Settings = {
   breakSound: 'beep',
 };
 
+function DurationInput({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <span className="text-xs font-medium text-gray-400">{label}</span>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onChange(Math.max(1, value - 1))}
+          className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold transition-colors flex items-center justify-center text-sm"
+        >
+          −
+        </button>
+        <span className="w-10 text-center font-mono font-semibold text-gray-700 text-sm">
+          {value}m
+        </span>
+        <button
+          onClick={() => onChange(Math.min(120, value + 1))}
+          className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold transition-colors flex items-center justify-center text-sm"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const { mode, phase, timeLeft, start, pause, reset, skip } = useTimer(settings);
@@ -33,6 +66,20 @@ export default function App() {
         </div>
 
         <div className="bg-white/70 backdrop-blur-sm rounded-3xl border border-gray-100 shadow-sm p-8 w-full flex flex-col items-center gap-6">
+          {/* Duration controls — always visible */}
+          <div className="flex gap-8 w-full justify-center pb-2 border-b border-gray-100">
+            <DurationInput
+              label="Focus"
+              value={settings.focusMinutes}
+              onChange={(v) => setSettings((s) => ({ ...s, focusMinutes: v }))}
+            />
+            <DurationInput
+              label="Break"
+              value={settings.breakMinutes}
+              onChange={(v) => setSettings((s) => ({ ...s, breakMinutes: v }))}
+            />
+          </div>
+
           <TimerDisplay
             mode={mode}
             phase={phase}
